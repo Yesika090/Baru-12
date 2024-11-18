@@ -1,0 +1,43 @@
+class Restoran:
+    def __init__(self):
+        self.hash_table = [None] * 10  # Ukuran default hash table adalah 10
+
+    def hash_function(self, key):
+        # Fungsi hash sederhana menggunakan modulus panjang tabel
+        return sum(ord(char) for char in key) % len(self.hash_table)
+
+    def tambahReservasi(self, nama, jenis_reservasi):
+        index = self.hash_function(nama)
+        # Linear probing untuk menangani tabrakan
+        for i in range(len(self.hash_table)):
+            probe_index = (index + i) % len(self.hash_table)
+            if self.hash_table[probe_index] is None or self.hash_table[probe_index] == "deleted":
+                self.hash_table[probe_index] = (nama, jenis_reservasi)
+                return True
+        return False  # Hash table penuh
+
+    def lihatReservasi(self, nama):
+        index = self.hash_function(nama)
+        for i in range(len(self.hash_table)):
+            probe_index = (index + i) % len(self.hash_table)
+            if self.hash_table[probe_index] is None:
+                return "None"  # Tidak ditemukan
+            if self.hash_table[probe_index][0] == nama:
+                return self.hash_table[probe_index][1]  # Kembalikan jenis reservasi
+        return "None"
+
+    def reserveDone(self, nama):
+        index = self.hash_function(nama)
+        for i in range(len(self.hash_table)):
+            probe_index = (index + i) % len(self.hash_table)
+            if self.hash_table[probe_index] is None:
+                return False  # Tidak ditemukan
+            if self.hash_table[probe_index][0] == nama:
+                self.hash_table[probe_index] = "deleted"
+                return True
+        return False
+
+    def printAll(self):
+        for entry in self.hash_table:
+            if entry is not None and entry != "deleted":
+                print(f"Nama: {entry[0]}, Reservasi: {entry[1]}")
